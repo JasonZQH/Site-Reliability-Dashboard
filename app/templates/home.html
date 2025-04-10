@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4 mb-4">SRE Uptime Dashboard</h1>
+        <p class="lead mb-4">
+            Monitor your services' availability and performance with our simple yet powerful dashboard.
+        </p>
+        {% if not current_user.is_authenticated %}
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-lg px-4 gap-3">
+                Register
+            </a>
+            <a href="{{ url_for('main.login') }}" class="btn btn-outline-secondary btn-lg px-4">
+                Login
+            </a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary btn-lg px-4">
+            Go to Dashboard
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

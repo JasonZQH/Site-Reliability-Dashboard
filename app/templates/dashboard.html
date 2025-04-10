@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Your Services</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addServiceModal">
+        <i class="bi bi-plus-lg"></i> Add Service
+    </button>
+</div>
+
+<div class="row">
+    {% for service in services %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <h5 class="card-title">{{ service.name }}</h5>
+                    <span class="badge bg-{% if service_status[service.id].status and service_status[service.id].status < 400 %}success{% else %}danger{% endif %}">
+                        {% if service_status[service.id].status %}
+                            {{ service_status[service.id].status }}
+                        {% else %}
+                            Down
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="card-text text-muted small mb-2">{{ service.url }}</p>
+                {% if service_status[service.id].response_time %}
+                <p class="card-text small">
+                    <i class="bi bi-speedometer2"></i> {{ "%.2f"|format(service_status[service.id].response_time) }}s
+                    <span class="text-muted ms-2">
+                        <i class="bi bi-clock"></i> {{ service_status[service.id].timestamp|datetimeformat }}
+                    </span>
+                </p>
+                {% endif %}
+                {% if service_status[service.id].error %}
+                <div class="alert alert-danger small mt-2 mb-0 p-2">
+                    <i class="bi bi-exclamation-triangle-fill"></i> {{ service_status[service.id].error }}
+                </div>
+                {% endif %}
+                <a href="{{ url_for('main.service_details', service_id=service.id) }}" class="btn btn-sm btn-outline-primary">
+                    View Details
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            You haven't added any services yet. Click "Add Service" to get started.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Add Service Modal -->
+<div class="modal fade" id="addServiceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Service</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('main.dashboard') }}">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.name.label(class="form-label") }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form.url.label(class="form-label") }}
+                        {{ form.url(class="form-control", placeholder="https://example.com") }}
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Add Service</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

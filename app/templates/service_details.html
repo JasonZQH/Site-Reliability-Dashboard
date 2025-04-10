@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ service.name }} Details{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>{{ service.name }}</h1>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Service Information</h5>
+                <p class="card-text">
+                    <strong>URL:</strong> {{ service.url }}<br>
+                    <strong>Added:</strong> {{ service.created_at|datetimeformat }}
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Uptime Statistics</h5>
+                <div class="d-flex align-items-center">
+                    <div class="me-4">
+                        <div class="display-4">{{ uptime_percent }}%</div>
+                        <small class="text-muted">Uptime</small>
+                    </div>
+                    <div>
+                        <p class="mb-1">
+                            <span class="badge bg-success">UP</span>
+                            {{ status_checks|selectattr('status_code', 'defined')|selectattr('status_code', 'lt', 400)|list|length }} checks
+                        </p>
+                        <p class="mb-1">
+                            <span class="badge bg-danger">DOWN</span>
+                            {{ status_checks|rejectattr('status_code', 'defined')|list|length + status_checks|selectattr('status_code', 'defined')|selectattr('status_code', 'ge', 400)|list|length }} checks
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Recent Status Checks</h5>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Status</th>
+                        <th>Response Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for check in status_checks %}
+                    <tr>
+                        <td>{{ check.timestamp|datetimeformat }}</td>
+                        <td>
+                            {% if check.status_code is none %}
+                                <span class="badge bg-danger">Down</span>
+                            {% elif check.status_code < 400 %}
+                                <span class="badge bg-success">{{ check.status_code }}</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">{{ check.status_code }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if check.response_time is not none %}
+                                {{ "%.2f"|format(check.response_time) }}s
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
