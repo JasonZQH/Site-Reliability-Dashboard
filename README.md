@@ -1,4 +1,4 @@
-# SRE Uptime Dashboard
+# Site Reliability Dashboard
 
 A Flask web application for monitoring service uptime and performance metrics.
 
@@ -68,7 +68,7 @@ MONITOR_INTERVAL=5  # minutes between checks
 
 ## Usage
 
-1. Access the application at `http://localhost:5000`
+1. Access the application at `http://localhost:5001`
 2. Register a new account
 3. Add services to monitor via the dashboard
 4. View uptime statistics and response history
